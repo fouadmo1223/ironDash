@@ -31,7 +31,10 @@ import { useAuth } from '@/lib/auth';
 import { cn } from '@/lib/utils';
 import i18n from '@/i18n';
 
-const NAV_GROUPS = [
+type NavItem = { to: string; key: string; icon: typeof LayoutDashboard; adminOnly?: boolean };
+type NavGroup = { label: string; adminOnly?: boolean; items: NavItem[] };
+
+const NAV_GROUPS: NavGroup[] = [
   {
     label: 'operations',
     items: [
@@ -46,17 +49,19 @@ const NAV_GROUPS = [
     ],
   },
   {
+    // Non-admin staff (e.g. receptionist) only get WhatsApp here.
     label: 'engagement',
     items: [
-      { to: '/notifications', key: 'notifications', icon: Bell },
+      { to: '/notifications', key: 'notifications', icon: Bell, adminOnly: true },
       { to: '/whatsapp', key: 'whatsapp', icon: MessageCircle },
-      { to: '/reports', key: 'reports', icon: BarChart3 },
-      { to: '/website', key: 'website', icon: Globe },
-      { to: '/media', key: 'media', icon: Image },
+      { to: '/reports', key: 'reports', icon: BarChart3, adminOnly: true },
+      { to: '/website', key: 'website', icon: Globe, adminOnly: true },
+      { to: '/media', key: 'media', icon: Image, adminOnly: true },
     ],
   },
   {
     label: 'settings',
+    adminOnly: true,
     items: [
       { to: '/branches', key: 'branches', icon: Building2 },
       { to: '/staff', key: 'staff', icon: UserCog },
@@ -65,15 +70,20 @@ const NAV_GROUPS = [
       { to: '/settings', key: 'settings', icon: Settings },
     ],
   },
-] as const;
+];
 
 const COLLAPSE_KEY = 'iron_gym_sidebar_collapsed';
 
 export function DashboardShell({ children }: { children: React.ReactNode }) {
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, isAdmin } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+
+  const navGroups = NAV_GROUPS.map((g) => ({
+    ...g,
+    items: g.adminOnly && !isAdmin ? [] : g.items.filter((it) => isAdmin || !it.adminOnly),
+  })).filter((g) => g.items.length > 0);
   const [open, setOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(() => {
     try {
@@ -150,7 +160,7 @@ export function DashboardShell({ children }: { children: React.ReactNode }) {
         </div>
 
         <nav className="flex-1 space-y-5 overflow-y-auto overflow-x-hidden p-3">
-          {NAV_GROUPS.map((group, gi) => (
+          {navGroups.map((group, gi) => (
             <div key={group.label}>
               {showText && (
                 <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.18em] text-muted-foreground/60">

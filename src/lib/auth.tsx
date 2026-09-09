@@ -17,16 +17,22 @@ export interface StaffPrincipal {
   email: string;
   accountType: 'STAFF' | 'MEMBER';
   language: string;
+  roleKey?: string | null;
 }
 
 interface AuthContextValue {
   user: StaffPrincipal | null;
   permissions: string[];
+  roleKey: string | null;
+  isAdmin: boolean;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
   can: (permission: string) => boolean;
 }
+
+/** Roles that get the full dashboard (engagement + settings groups). */
+const ADMIN_ROLES = new Set(['SUPER_ADMIN', 'ADMIN']);
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -81,9 +87,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [permissions],
   );
 
+  const roleKey = user?.roleKey ?? null;
+  const isAdmin = !!roleKey && ADMIN_ROLES.has(roleKey);
+
   const value = useMemo(
-    () => ({ user, permissions, loading, login, logout, can }),
-    [user, permissions, loading, login, logout, can],
+    () => ({ user, permissions, roleKey, isAdmin, loading, login, logout, can }),
+    [user, permissions, roleKey, isAdmin, loading, login, logout, can],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

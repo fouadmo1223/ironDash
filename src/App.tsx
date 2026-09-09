@@ -40,7 +40,16 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
   return <DashboardShell>{children}</DashboardShell>;
 }
 
-const ROUTES: Array<{ path: string; element: React.ReactNode }> = [
+/** Admin/super-admin-only routes: everything in the engagement (except WhatsApp)
+ *  and settings nav groups. Non-admin staff are bounced to the dashboard home. */
+function RequireAdmin({ children }: { children: React.ReactNode }) {
+  const { isAdmin, loading } = useAuth();
+  if (loading) return null;
+  if (!isAdmin) return <Navigate to="/" replace />;
+  return <>{children}</>;
+}
+
+const ROUTES: Array<{ path: string; element: React.ReactNode; adminOnly?: boolean }> = [
   { path: '/', element: <DashboardHomePage /> },
   { path: '/members', element: <MembersListPage /> },
   { path: '/members/:id', element: <MemberProfilePage /> },
@@ -53,18 +62,18 @@ const ROUTES: Array<{ path: string; element: React.ReactNode }> = [
   { path: '/check-in', element: <CheckInPage /> },
   { path: '/qr-cards', element: <QrCardsPage /> },
   { path: '/attendance', element: <AttendancePage /> },
-  { path: '/notifications', element: <NotificationsPage /> },
+  { path: '/notifications', element: <NotificationsPage />, adminOnly: true },
   { path: '/whatsapp', element: <WhatsAppPage /> },
-  { path: '/reports', element: <ReportsPage /> },
-  { path: '/website', element: <WebsitePage /> },
-  { path: '/media', element: <MediaPage /> },
-  { path: '/branches', element: <BranchesPage /> },
-  { path: '/staff', element: <StaffPage /> },
-  { path: '/roles', element: <RolesPage /> },
-  { path: '/audit', element: <AuditPage /> },
-  { path: '/settings', element: <SettingsPage /> },
-  { path: '/settings/payment-methods/new', element: <PaymentMethodEditPage /> },
-  { path: '/settings/payment-methods/:id/edit', element: <PaymentMethodEditPage /> },
+  { path: '/reports', element: <ReportsPage />, adminOnly: true },
+  { path: '/website', element: <WebsitePage />, adminOnly: true },
+  { path: '/media', element: <MediaPage />, adminOnly: true },
+  { path: '/branches', element: <BranchesPage />, adminOnly: true },
+  { path: '/staff', element: <StaffPage />, adminOnly: true },
+  { path: '/roles', element: <RolesPage />, adminOnly: true },
+  { path: '/audit', element: <AuditPage />, adminOnly: true },
+  { path: '/settings', element: <SettingsPage />, adminOnly: true },
+  { path: '/settings/payment-methods/new', element: <PaymentMethodEditPage />, adminOnly: true },
+  { path: '/settings/payment-methods/:id/edit', element: <PaymentMethodEditPage />, adminOnly: true },
 ];
 
 export function App() {
@@ -72,7 +81,13 @@ export function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
       {ROUTES.map((r) => (
-        <Route key={r.path} path={r.path} element={<RequireAuth>{r.element}</RequireAuth>} />
+        <Route
+          key={r.path}
+          path={r.path}
+          element={
+            <RequireAuth>{r.adminOnly ? <RequireAdmin>{r.element}</RequireAdmin> : r.element}</RequireAuth>
+          }
+        />
       ))}
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
