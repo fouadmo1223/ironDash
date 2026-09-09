@@ -26,7 +26,8 @@
       "engagement": "Engagement",
       "settings": "Settings"
     },
-    "qrcards": "QR Cards"
+    "qrcards": "QR Cards",
+    "messages": "Messages"
   },
   "auth": {
     "title": "Staff sign in",
@@ -260,7 +261,8 @@
       "core": "Core / floor",
       "row": "Rowing",
       "floor": "Gym interior"
-    }
+    },
+    "mapLink": "Map / directions link"
   },
   "checkin": {
     "title": "Check-in",
@@ -724,5 +726,24 @@
     "clear": "Clear",
     "printSelected": "Print selected ({{n}})",
     "selectToPrint": "Tick cards to print"
+  },
+  "messages": {
+    "title": "Messages",
+    "desc": "Enquiries from the website contact form.",
+    "from": "From",
+    "phone": "Phone",
+    "message": "Message",
+    "status": "Status",
+    "date": "Received",
+    "name": "Name",
+    "email": "Email",
+    "search": "Search name, email, phone…",
+    "allStatuses": "All",
+    "new": "New",
+    "read": "Read",
+    "archivedStatus": "Archived",
+    "empty": "No messages yet.",
+    "archive": "Archive",
+    "archived": "Archived"
   }
 }

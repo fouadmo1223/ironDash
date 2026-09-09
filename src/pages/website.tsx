@@ -452,6 +452,14 @@ function SiteTab() {
         <Field label={t('website.addressAr')}>
           <Textarea dir="rtl" value={site.contact.addressAr ?? ''} onChange={(e) => set('contact', 'addressAr', e.target.value)} />
         </Field>
+        <Field label={t('website.mapLink', 'Map / directions link')}>
+          <Input
+            dir="ltr"
+            placeholder="https://maps.google.com/?q=..."
+            value={site.contact.mapUrl ?? ''}
+            onChange={(e) => set('contact', 'mapUrl', e.target.value)}
+          />
+        </Field>
       </Card>
       <Card className="space-y-3 p-4">
         <h3 className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">

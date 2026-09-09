@@ -26,6 +26,7 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   QrCode,
+  Inbox,
 } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { cn } from '@/lib/utils';
@@ -46,6 +47,7 @@ const NAV_GROUPS: NavGroup[] = [
       { to: '/check-in', key: 'checkin', icon: ScanLine },
       { to: '/qr-cards', key: 'qrcards', icon: QrCode },
       { to: '/attendance', key: 'attendance', icon: CalendarCheck },
+      { to: '/messages', key: 'messages', icon: Inbox },
     ],
   },
   {

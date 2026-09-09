@@ -25,6 +25,7 @@ import { QrCardsPage } from '@/pages/qr-cards';
 import { WebsitePage } from '@/pages/website';
 import { MediaPage } from '@/pages/media';
 import { NotificationsPage } from '@/pages/notifications';
+import { MessagesPage } from '@/pages/messages';
 
 function RequireAuth({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth();
@@ -63,6 +64,7 @@ const ROUTES: Array<{ path: string; element: React.ReactNode; adminOnly?: boolea
   { path: '/check-in', element: <CheckInPage /> },
   { path: '/qr-cards', element: <QrCardsPage /> },
   { path: '/attendance', element: <AttendancePage /> },
+  { path: '/messages', element: <MessagesPage /> },
   { path: '/notifications', element: <NotificationsPage />, adminOnly: true },
   { path: '/whatsapp', element: <WhatsAppPage /> },
   { path: '/reports', element: <ReportsPage />, adminOnly: true },
