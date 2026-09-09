@@ -116,13 +116,13 @@ export function LoginPage() {
                   type={showPw ? 'text' : 'password'}
                   autoComplete="current-password"
                   dir="ltr"
-                  className="h-11 w-full rounded-md border border-input bg-surface px-3 pe-10 text-sm outline-none transition-colors focus:border-accent"
+                  className="h-11 w-full rounded-md border border-input bg-surface pl-3 pr-10 text-sm outline-none transition-colors focus:border-accent"
                   {...register('password')}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPw((v) => !v)}
-                  className="absolute end-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-muted-foreground transition-colors hover:text-foreground"
                   aria-label={showPw ? 'Hide password' : 'Show password'}
                 >
                   {showPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
