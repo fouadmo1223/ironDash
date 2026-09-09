@@ -31,8 +31,13 @@ interface AuthContextValue {
   can: (permission: string) => boolean;
 }
 
-/** Roles that get the full dashboard (engagement + settings groups). */
-const ADMIN_ROLES = new Set(['SUPER_ADMIN', 'ADMIN']);
+/**
+ * Permission that stands in for "admin-tier" — it unlocks the engagement +
+ * settings nav groups and their routes. Gating on a permission (not a hardcoded
+ * role name) keeps this correct as roles are added or renamed, and matches the
+ * backend, which guards staff administration with the same `staff.manage`.
+ */
+const ADMIN_PERMISSION = 'staff.manage';
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 
@@ -88,7 +93,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   const roleKey = user?.roleKey ?? null;
-  const isAdmin = !!roleKey && ADMIN_ROLES.has(roleKey);
+  const isAdmin = can(ADMIN_PERMISSION);
 
   const value = useMemo(
     () => ({ user, permissions, roleKey, isAdmin, loading, login, logout, can }),

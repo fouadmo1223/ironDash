@@ -43,8 +43,9 @@ function RequireAuth({ children }: { children: React.ReactNode }) {
 /** Admin/super-admin-only routes: everything in the engagement (except WhatsApp)
  *  and settings nav groups. Non-admin staff are bounced to the dashboard home. */
 function RequireAdmin({ children }: { children: React.ReactNode }) {
-  const { isAdmin, loading } = useAuth();
-  if (loading) return null;
+  // Only ever rendered inside RequireAuth, which has already resolved auth
+  // (and therefore permissions) before rendering the shell.
+  const { isAdmin } = useAuth();
   if (!isAdmin) return <Navigate to="/" replace />;
   return <>{children}</>;
 }
