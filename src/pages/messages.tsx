@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Mail, Phone, User, Archive } from 'lucide-react';
 import { formatDateTime } from '@/lib/utils';
-import { PageHeader, Input } from '@/components/ui/primitives';
+import { PageHeader, Input, Select } from '@/components/ui/primitives';
 import { DataTable, Pagination, type Column } from '@/components/ui/data-table';
 import { Dialog } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
@@ -117,19 +117,19 @@ export function MessagesPage() {
           placeholder={t('messages.search', 'Search name, email, phone…')}
           className="max-w-xs"
         />
-        <select
+        <Select
           value={status}
           onChange={(e) => {
             setPage(1);
             setStatus(e.target.value);
           }}
-          className="h-9 rounded-md border border-input bg-surface px-2 text-sm"
+          className="w-40"
         >
           <option value="">{t('messages.allStatuses', 'All')}</option>
           <option value="NEW">{t('messages.new', 'New')}</option>
           <option value="READ">{t('messages.read', 'Read')}</option>
           <option value="ARCHIVED">{t('messages.archivedStatus', 'Archived')}</option>
-        </select>
+        </Select>
       </div>
 
       <DataTable
