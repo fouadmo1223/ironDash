@@ -22,7 +22,7 @@ import {
   qk,
 } from '@/lib/api/hooks';
 import { useAuth } from '@/lib/auth';
-import { api, apiError, apiStatus, unwrap } from '@/lib/api';
+import { api, apiError, apiErrorIs, apiStatus, unwrap } from '@/lib/api';
 import type { AttendanceRow, PaymentRow, SubscriptionRow } from '@/lib/api/types';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 import { printQrCards } from '@/lib/print-qr';
@@ -622,17 +622,37 @@ function QrDialog({
             size="sm"
             disabled={!cardCode.trim() || busy}
             onClick={async () => {
-              setBusy(true);
-              try {
+              const doAssign = async (replace: boolean) => {
                 await api.post('/qr-cards/assign', {
                   cardCode: cardCode.trim(),
                   memberId,
+                  replace,
                 });
                 setCardCode('');
                 toast.success(t('members.cardAssigned'));
                 load(false);
+              };
+              setBusy(true);
+              try {
+                await doAssign(false);
               } catch (e) {
-                toast.error(apiError(e));
+                if (
+                  apiErrorIs(e, 'hasActiveQr') &&
+                  window.confirm(
+                    t(
+                      'members.replaceQrConfirm',
+                      'This member already has a QR. Replace it? The old one is removed.',
+                    ),
+                  )
+                ) {
+                  try {
+                    await doAssign(true);
+                  } catch (e2) {
+                    toast.error(apiError(e2));
+                  }
+                } else {
+                  toast.error(apiError(e));
+                }
               } finally {
                 setBusy(false);
               }

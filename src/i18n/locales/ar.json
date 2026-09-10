@@ -438,7 +438,8 @@
     "cardReleased": "تم إرجاع البطاقة",
     "add": "إضافة عضو",
     "addTitle": "عضو جديد",
-    "created": "تم إنشاء العضو"
+    "created": "تم إنشاء العضو",
+    "replaceQrConfirm": "هذا العضو لديه رمز QR بالفعل. استبداله؟ سيُحذف القديم."
   },
   "payments": {
     "tab": {
@@ -731,7 +732,8 @@
     "selectAll": "تحديد الكل",
     "clear": "مسح",
     "printSelected": "طباعة المحدَّد ({{n}})",
-    "selectToPrint": "اختر البطاقات للطباعة"
+    "selectToPrint": "اختر البطاقات للطباعة",
+    "replaceConfirm": "هذا العضو لديه رمز QR بالفعل. استبداله؟ سيُحذف القديم."
   },
   "messages": {
     "title": "الرسائل",

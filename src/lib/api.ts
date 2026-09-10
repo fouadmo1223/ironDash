@@ -16,6 +16,13 @@ const API_ERROR_PATTERNS: Array<[RegExp, string]> = [
   [/validation failed/i, 'validation'],
 ];
 
+/** True when the backend error message matches a known `apiErrors` key. */
+export function apiErrorIs(error: unknown, key: string): boolean {
+  if (!axios.isAxiosError(error)) return false;
+  const raw = String((error.response?.data as { message?: string } | undefined)?.message ?? '');
+  return API_ERROR_PATTERNS.some(([re, k]) => k === key && re.test(raw));
+}
+
 function localiseApiMessage(raw: string): string {
   for (const [re, key] of API_ERROR_PATTERNS) {
     if (re.test(raw)) {

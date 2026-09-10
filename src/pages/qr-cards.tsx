@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
 import { useMembers } from '@/lib/api/hooks';
-import { api, apiError, unwrap } from '@/lib/api';
+import { api, apiError, apiErrorIs, unwrap } from '@/lib/api';
 import { cn } from '@/lib/utils';
 import { printQrCards } from '@/lib/print-qr';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -257,12 +257,26 @@ function AssignDialog({
   const params = useMemo(() => ({ search: search || undefined, limit: 8 }), [search]);
   const { data } = useMembers(params);
 
-  const assign = async (memberId: string) => {
+  const assign = async (memberId: string, replace = false) => {
     setBusy(true);
     try {
-      await api.post('/qr-cards/assign', { cardCode: card.cardCode, memberId });
+      await api.post('/qr-cards/assign', { cardCode: card.cardCode, memberId, replace });
       onAssigned();
     } catch (e) {
+      if (!replace && apiErrorIs(e, 'hasActiveQr')) {
+        setBusy(false);
+        if (
+          window.confirm(
+            t(
+              'qrCards.replaceConfirm',
+              'This member already has a QR. Replace it? The old one is removed.',
+            ),
+          )
+        ) {
+          await assign(memberId, true);
+        }
+        return;
+      }
       toast.error(apiError(e));
     } finally {
       setBusy(false);

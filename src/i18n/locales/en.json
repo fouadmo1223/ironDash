@@ -435,7 +435,8 @@
     "cardReleased": "Card released",
     "add": "Add member",
     "addTitle": "New member",
-    "created": "Member created"
+    "created": "Member created",
+    "replaceQrConfirm": "This member already has a QR. Replace it? The old one is removed."
   },
   "payments": {
     "tab": {
@@ -725,7 +726,8 @@
     "selectAll": "Select all",
     "clear": "Clear",
     "printSelected": "Print selected ({{n}})",
-    "selectToPrint": "Tick cards to print"
+    "selectToPrint": "Tick cards to print",
+    "replaceConfirm": "This member already has a QR. Replace it? The old one is removed."
   },
   "messages": {
     "title": "Messages",
