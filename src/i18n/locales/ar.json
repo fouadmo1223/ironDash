@@ -282,7 +282,8 @@
       "DENIED_FROZEN": "العضوية مجمّدة",
       "DENIED_NO_MEMBERSHIP": "لا توجد عضوية نشطة",
       "DENIED_PENDING_PAYMENT": "الدفع قيد المراجعة",
-      "DENIED_DAILY_LIMIT": "تم بلوغ الحد اليومي"
+      "DENIED_DAILY_LIMIT": "تم بلوغ الحد اليومي",
+      "DENIED_BANNED": "العضو محظور"
     },
     "totalVisits_one": "إجمالي الزيارات: {{count}}",
     "totalVisits_other": "إجمالي الزيارات: {{count}}",
@@ -441,7 +442,22 @@
     "created": "تم إنشاء العضو",
     "replaceQrConfirm": "هذا العضو لديه رمز QR بالفعل. استبداله؟ سيُحذف القديم.",
     "replaceQrTitle": "استبدال رمز QR",
-    "replaceQr": "استبدال"
+    "replaceQr": "استبدال",
+    "ban": "حظر",
+    "unban": "إلغاء الحظر",
+    "bannedBadge": "محظور",
+    "banTitle": "حظر {{name}}؟",
+    "banHint": "العضو المحظور لا يستطيع تسجيل الدخول أو فتح البوابة أو تسجيل الحضور. تُنهى جلساته فوراً ويُعطَّل رمز الدخول الخاص به. هذا الإجراء قابل للتراجع.",
+    "banReasonLabel": "السبب",
+    "banReasonPlaceholder": "لماذا يتم حظر هذا العضو؟",
+    "unbanTitle": "إعادة تفعيل العضو؟",
+    "unbanConfirm": "سيتمكن العضو من تسجيل الدخول مجدداً. يبقى رمز الدخول معطَّلاً حتى تعيد تفعيله.",
+    "delete": "حذف",
+    "deleteTitle": "حذف العضو نهائياً؟",
+    "deleteConfirm": "سيؤدي هذا إلى حذف {{name}} ({{code}}) وكل السجلات المرتبطة نهائياً — الحساب والاشتراكات والمدفوعات والحضور والتجميد والإشعارات والملاحظات. تعود بطاقات QR الفعلية إلى المخزون. لا يمكن التراجع.",
+    "memberBanned": "تم حظر العضو",
+    "memberUnbanned": "تمت إعادة تفعيل العضو",
+    "memberDeleted": "تم حذف العضو وكل سجلاته"
   },
   "payments": {
     "tab": {
@@ -483,6 +499,8 @@
     "cancel": "إلغاء",
     "requestRefund": "طلب استرداد",
     "recordRefund": "تسجيل استرداد",
+    "refundProof": "إثبات الاسترداد",
+    "refundProofHint": "اختياري — أرفق صورة أو إيصالاً لتحويل الاسترداد.",
     "rejectionReason": "سبب الرفض",
     "previousAttempts": "محاولات سابقة على هذا الاشتراك",
     "none": "لا شيء.",
@@ -640,6 +658,9 @@
   "auditAction": {
     "MEMBER_UPDATED": "تعديل عضو",
     "MEMBER_CREATED": "إنشاء عضو",
+    "MEMBER_BANNED": "حظر عضو",
+    "MEMBER_UNBANNED": "إلغاء حظر عضو",
+    "MEMBER_DELETED": "حذف عضو",
     "SUBSCRIPTION_CREATED": "إنشاء اشتراك",
     "SUBSCRIPTION_RENEWED": "تجديد اشتراك",
     "SUBSCRIPTION_CANCELLED": "إلغاء اشتراك",

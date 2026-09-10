@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useQueryClient } from '@tanstack/react-query';
 import { ArrowLeft, ExternalLink } from 'lucide-react';
 import { Card, PageHeader, Textarea, Field } from '@/components/ui/primitives';
 import { DetailSkeleton } from '@/components/ui/skeleton';
@@ -8,8 +9,8 @@ import { Button } from '@/components/ui/button';
 import { StatusBadge } from '@/components/ui/status-badge';
 import { Dialog, ConfirmDialog } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
-import { usePaymentAction, usePaymentDetail } from '@/lib/api/hooks';
-import { apiError } from '@/lib/api';
+import { usePaymentAction, usePaymentDetail, qk } from '@/lib/api/hooks';
+import { api, apiError } from '@/lib/api';
 import type { MemberRow } from '@/lib/api/types';
 import { formatCurrency, formatDate, formatDateTime } from '@/lib/utils';
 import i18n from '@/i18n';
@@ -21,6 +22,7 @@ export function PaymentReviewPage() {
   const { id = '' } = useParams();
   const navigate = useNavigate();
   const toast = useToast();
+  const qc = useQueryClient();
   const lng = i18n.language;
   const { data, isLoading, refetch } = usePaymentDetail(id);
   const runAction = usePaymentAction(id);
@@ -37,7 +39,7 @@ export function PaymentReviewPage() {
     );
   }
 
-  const { payment, previousAttempts, auditHistory, signedProofUrl } = data;
+  const { payment, previousAttempts, auditHistory, signedProofUrl, signedRefundProofUrl } = data;
   const member = payment.member as MemberRow;
   const sub = typeof payment.subscription === 'object' ? payment.subscription : null;
   const isOpen = OPEN_STATUSES.includes(payment.status);
@@ -52,6 +54,27 @@ export function PaymentReviewPage() {
       setReasonModal(null);
       setRefundOpen(false);
       setReason('');
+      void refetch();
+    } catch (e) {
+      toast.error(t('members.actionFailed'), apiError(e));
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const submitRefund = async (fd: FormData) => {
+    setBusy('refund');
+    try {
+      await api.post(`/payments/${id}/refund`, fd, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      await Promise.all([
+        qc.invalidateQueries({ queryKey: ['payments'] }),
+        qc.invalidateQueries({ queryKey: qk.payment(id) }),
+        qc.invalidateQueries({ queryKey: qk.dashboardSummary }),
+      ]);
+      toast.success(t('payments.actioned', { action: t('payments.recordRefund') }));
+      setRefundOpen(false);
       void refetch();
     } catch (e) {
       toast.error(t('members.actionFailed'), apiError(e));
@@ -227,6 +250,26 @@ export function PaymentReviewPage() {
               <p>{payment.rejectionReason}</p>
             </Card>
           )}
+
+          {signedRefundProofUrl && (
+            <Card className="overflow-hidden">
+              <div className="border-b border-border p-3 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                {t('payments.refundProof')}
+              </div>
+              <a
+                href={signedRefundProofUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="block bg-black/40"
+              >
+                <img
+                  src={signedRefundProofUrl}
+                  alt={t('payments.refundProof')}
+                  className="mx-auto max-h-[320px] w-auto"
+                />
+              </a>
+            </Card>
+          )}
         </div>
       </div>
 
@@ -341,7 +384,7 @@ export function PaymentReviewPage() {
         />
       </Dialog>
 
-      <RefundDialog open={refundOpen} onClose={() => setRefundOpen(false)} max={payment.amount} onSubmit={(body) => act('refund', body)} busy={busy === 'refund'} />
+      <RefundDialog open={refundOpen} onClose={() => setRefundOpen(false)} max={payment.amount} onSubmit={submitRefund} busy={busy === 'refund'} />
     </div>
   );
 }
@@ -365,7 +408,7 @@ function RefundDialog({
   open: boolean;
   onClose: () => void;
   max: number;
-  onSubmit: (body: Record<string, unknown>) => void;
+  onSubmit: (body: FormData) => void;
   busy: boolean;
 }) {
   const { t } = useTranslation();
@@ -374,6 +417,18 @@ function RefundDialog({
   const [method, setMethod] = useState('');
   const [reference, setReference] = useState('');
   const [note, setNote] = useState('');
+  const [proof, setProof] = useState<File | null>(null);
+
+  const submit = () => {
+    const fd = new FormData();
+    fd.append('amount', String(Number(amount)));
+    fd.append('date', date);
+    fd.append('method', method);
+    if (reference) fd.append('reference', reference);
+    if (note) fd.append('note', note);
+    if (proof) fd.append('proof', proof);
+    onSubmit(fd);
+  };
 
   return (
     <Dialog
@@ -389,7 +444,7 @@ function RefundDialog({
           <Button
             variant="danger"
             disabled={busy || !method.trim() || Number(amount) <= 0}
-            onClick={() => onSubmit({ amount: Number(amount), date, method, reference, note })}
+            onClick={submit}
           >
             {t('payments.recordRefund')}
           </Button>
@@ -430,6 +485,15 @@ function RefundDialog({
         </Field>
         <Field label={`${t('payments.note')} (${t('common.optional')})`}>
           <Textarea value={note} onChange={(e) => setNote(e.target.value)} />
+        </Field>
+        <Field label={`${t('payments.refundProof')} (${t('common.optional')})`}>
+          <input
+            type="file"
+            accept="image/*"
+            className="w-full text-sm text-muted-foreground file:mr-3 file:rounded-md file:border-0 file:bg-muted file:px-3 file:py-1.5 file:text-sm file:text-foreground hover:file:bg-muted/70"
+            onChange={(e) => setProof(e.target.files?.[0] ?? null)}
+          />
+          <p className="mt-1 text-xs text-muted-foreground">{t('payments.refundProofHint')}</p>
         </Field>
       </div>
     </Dialog>

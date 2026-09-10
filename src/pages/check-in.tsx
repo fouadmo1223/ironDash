@@ -35,6 +35,11 @@ const TONE: Record<string, { bg: string; icon: typeof CheckCircle2; label: strin
     icon: Clock,
     label: 'Daily check-in limit reached',
   },
+  DENIED_BANNED: {
+    bg: 'bg-danger/15 border-danger/40',
+    icon: XCircle,
+    label: 'Member is banned',
+  },
 };
 
 function Stat({ label, value, warn }: { label: string; value: string; warn?: boolean }) {

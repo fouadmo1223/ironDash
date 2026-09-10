@@ -9,6 +9,9 @@ export interface UserRef {
   lastName: string;
   phone?: string;
   email?: string;
+  isBanned?: boolean;
+  bannedAt?: string | null;
+  banReason?: string;
 }
 
 export interface MemberRow {
@@ -119,6 +122,7 @@ export interface PaymentDetail {
     metadata?: Record<string, unknown>;
   }>;
   signedProofUrl: string | null;
+  signedRefundProofUrl: string | null;
 }
 
 export interface AttendanceRow {

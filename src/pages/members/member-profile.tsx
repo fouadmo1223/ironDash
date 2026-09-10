@@ -1,8 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
-import { useParams } from 'react-router-dom';
-import { QrCode, RefreshCw, Loader2, Plus, Snowflake, Receipt, Printer } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
+import {
+  QrCode,
+  RefreshCw,
+  Loader2,
+  Plus,
+  Snowflake,
+  Receipt,
+  Printer,
+  Ban,
+  ShieldCheck,
+  Trash2,
+} from 'lucide-react';
 import { Card, PageHeader, Textarea, Field, Input, Select } from '@/components/ui/primitives';
 import { DetailSkeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
@@ -35,13 +46,61 @@ type Tab = (typeof TABS)[number];
 export function MemberProfilePage() {
   const { t } = useTranslation();
   const { id = '' } = useParams();
+  const navigate = useNavigate();
   const lng = i18n.language;
+  const toast = useToast();
+  const confirm = useConfirm();
+  const qc = useQueryClient();
+  const { can } = useAuth();
   const [tab, setTab] = useState<Tab>('overview');
   const [qrOpen, setQrOpen] = useState(false);
+  const [banOpen, setBanOpen] = useState(false);
+  const [adminBusy, setAdminBusy] = useState(false);
   const [action, setAction] = useState<null | 'subscribe' | 'payment' | 'freeze'>(null);
 
   const { data: member, isLoading } = useMember(id);
   const name = member ? `${member.user?.firstName} ${member.user?.lastName}` : '';
+  const banned = !!member?.user?.isBanned;
+  const canModerate = can('member.delete');
+
+  const unban = async () => {
+    const ok = await confirm({
+      title: t('members.unbanTitle'),
+      message: t('members.unbanConfirm'),
+      confirmLabel: t('members.unban'),
+    });
+    if (!ok) return;
+    setAdminBusy(true);
+    try {
+      await api.post(`/members/${id}/unban`, {});
+      await qc.invalidateQueries({ queryKey: ['members', id] });
+      toast.success(t('members.memberUnbanned'));
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setAdminBusy(false);
+    }
+  };
+
+  const remove = async () => {
+    const ok = await confirm({
+      title: t('members.deleteTitle'),
+      message: t('members.deleteConfirm', { name, code: member?.memberCode ?? '' }),
+      confirmLabel: t('members.delete'),
+      danger: true,
+    });
+    if (!ok) return;
+    setAdminBusy(true);
+    try {
+      await api.delete(`/members/${id}`);
+      await qc.invalidateQueries({ queryKey: ['members'] });
+      toast.success(t('members.memberDeleted'));
+      navigate('/members');
+    } catch (e) {
+      toast.error(apiError(e));
+      setAdminBusy(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -62,6 +121,11 @@ export function MemberProfilePage() {
         description={member.memberCode}
         actions={
           <>
+            {banned && (
+              <span className="inline-flex items-center gap-1 rounded-md border border-danger/40 bg-danger/10 px-2 py-1 text-xs font-semibold uppercase tracking-wide text-danger">
+                <Ban className="h-3.5 w-3.5" /> {t('members.bannedBadge')}
+              </span>
+            )}
             <Button variant="outline" size="sm" onClick={() => setAction('subscribe')}>
               <Plus className="h-4 w-4" /> {t('members.subscription')}
             </Button>
@@ -78,6 +142,21 @@ export function MemberProfilePage() {
             <Button variant="outline" size="sm" onClick={() => setQrOpen(true)}>
               <QrCode className="h-4 w-4" /> {t('members.qr')}
             </Button>
+            {canModerate &&
+              (banned ? (
+                <Button variant="outline" size="sm" onClick={unban} disabled={adminBusy}>
+                  <ShieldCheck className="h-4 w-4" /> {t('members.unban')}
+                </Button>
+              ) : (
+                <Button variant="outline" size="sm" onClick={() => setBanOpen(true)} disabled={adminBusy}>
+                  <Ban className="h-4 w-4" /> {t('members.ban')}
+                </Button>
+              ))}
+            {canModerate && (
+              <Button variant="danger" size="sm" onClick={remove} disabled={adminBusy}>
+                <Trash2 className="h-4 w-4" /> {t('members.delete')}
+              </Button>
+            )}
           </>
         }
       />
@@ -173,7 +252,78 @@ export function MemberProfilePage() {
           onClose={() => setAction(null)}
         />
       )}
+      <BanDialog
+        open={banOpen}
+        memberName={name}
+        onClose={() => setBanOpen(false)}
+        onBanned={async () => {
+          setBanOpen(false);
+          await qc.invalidateQueries({ queryKey: ['members', id] });
+          toast.success(t('members.memberBanned'));
+        }}
+        memberId={id}
+      />
     </div>
+  );
+}
+
+function BanDialog({
+  open,
+  memberId,
+  memberName,
+  onClose,
+  onBanned,
+}: {
+  open: boolean;
+  memberId: string;
+  memberName: string;
+  onClose: () => void;
+  onBanned: () => void;
+}) {
+  const { t } = useTranslation();
+  const toast = useToast();
+  const [reason, setReason] = useState('');
+  const [busy, setBusy] = useState(false);
+
+  const ban = async () => {
+    setBusy(true);
+    try {
+      await api.post(`/members/${memberId}/ban`, { reason: reason.trim() || undefined });
+      setReason('');
+      onBanned();
+    } catch (e) {
+      toast.error(apiError(e));
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  return (
+    <Dialog
+      open={open}
+      onClose={onClose}
+      title={t('members.banTitle', { name: memberName })}
+      description={t('members.banHint')}
+      size="sm"
+      footer={
+        <>
+          <Button variant="outline" onClick={onClose}>
+            {t('common.cancel')}
+          </Button>
+          <Button variant="danger" onClick={ban} disabled={busy}>
+            {busy ? '…' : t('members.ban')}
+          </Button>
+        </>
+      }
+    >
+      <Field label={`${t('members.banReasonLabel')} (${t('common.optional')})`}>
+        <Textarea
+          value={reason}
+          onChange={(e) => setReason(e.target.value)}
+          placeholder={t('members.banReasonPlaceholder')}
+        />
+      </Field>
+    </Dialog>
   );
 }
 

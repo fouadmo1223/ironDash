@@ -282,7 +282,8 @@
       "DENIED_FROZEN": "Membership frozen",
       "DENIED_NO_MEMBERSHIP": "No active membership",
       "DENIED_PENDING_PAYMENT": "Payment under review",
-      "DENIED_DAILY_LIMIT": "Daily limit reached"
+      "DENIED_DAILY_LIMIT": "Daily limit reached",
+      "DENIED_BANNED": "Member is banned"
     },
     "totalVisits_one": "Total visits: {{count}}",
     "totalVisits_other": "Total visits: {{count}}",
@@ -438,7 +439,22 @@
     "created": "Member created",
     "replaceQrConfirm": "This member already has a QR. Replace it? The old one is removed.",
     "replaceQrTitle": "Replace QR",
-    "replaceQr": "Replace"
+    "replaceQr": "Replace",
+    "ban": "Ban",
+    "unban": "Reinstate",
+    "bannedBadge": "Banned",
+    "banTitle": "Ban {{name}}?",
+    "banHint": "A banned member cannot log in, open the portal, or check in. Their sessions end immediately and their access QR is switched off. This is reversible.",
+    "banReasonLabel": "Reason",
+    "banReasonPlaceholder": "Why is this member being banned?",
+    "unbanTitle": "Reinstate member?",
+    "unbanConfirm": "The member will be able to log in again. Their access QR stays off until you re-enable it.",
+    "delete": "Delete",
+    "deleteTitle": "Delete member permanently?",
+    "deleteConfirm": "This permanently deletes {{name}} ({{code}}) and every related record — login, subscriptions, payments, attendance, freezes, notifications and notes. Physical QR cards return to the pool. This cannot be undone.",
+    "memberBanned": "Member banned",
+    "memberUnbanned": "Member reinstated",
+    "memberDeleted": "Member and all related records deleted"
   },
   "payments": {
     "tab": {
@@ -480,6 +496,8 @@
     "cancel": "Cancel",
     "requestRefund": "Request refund",
     "recordRefund": "Record refund",
+    "refundProof": "Refund proof",
+    "refundProofHint": "Optional — attach a screenshot or receipt of the refund transfer.",
     "rejectionReason": "Rejection reason",
     "previousAttempts": "Previous attempts on this subscription",
     "none": "None.",
@@ -634,6 +652,9 @@
   "auditAction": {
     "MEMBER_UPDATED": "Member updated",
     "MEMBER_CREATED": "Member created",
+    "MEMBER_BANNED": "Member banned",
+    "MEMBER_UNBANNED": "Member reinstated",
+    "MEMBER_DELETED": "Member deleted",
     "SUBSCRIPTION_CREATED": "Subscription created",
     "SUBSCRIPTION_RENEWED": "Subscription renewed",
     "SUBSCRIPTION_CANCELLED": "Subscription cancelled",
