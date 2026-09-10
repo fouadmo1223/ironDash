@@ -439,7 +439,9 @@
     "add": "إضافة عضو",
     "addTitle": "عضو جديد",
     "created": "تم إنشاء العضو",
-    "replaceQrConfirm": "هذا العضو لديه رمز QR بالفعل. استبداله؟ سيُحذف القديم."
+    "replaceQrConfirm": "هذا العضو لديه رمز QR بالفعل. استبداله؟ سيُحذف القديم.",
+    "replaceQrTitle": "استبدال رمز QR",
+    "replaceQr": "استبدال"
   },
   "payments": {
     "tab": {
@@ -733,7 +735,9 @@
     "clear": "مسح",
     "printSelected": "طباعة المحدَّد ({{n}})",
     "selectToPrint": "اختر البطاقات للطباعة",
-    "replaceConfirm": "هذا العضو لديه رمز QR بالفعل. استبداله؟ سيُحذف القديم."
+    "replaceConfirm": "هذا العضو لديه رمز QR بالفعل. استبداله؟ سيُحذف القديم.",
+    "replaceTitle": "استبدال رمز QR",
+    "replace": "استبدال"
   },
   "messages": {
     "title": "الرسائل",

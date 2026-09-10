@@ -7,6 +7,7 @@ import './index.css';
 import { App } from './App';
 import { AuthProvider } from './lib/auth';
 import { ToastProvider } from './components/ui/toast';
+import { ConfirmProvider } from './components/ui/confirm';
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { staleTime: 30_000, retry: 1, refetchOnWindowFocus: false } },
@@ -17,9 +18,11 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <ToastProvider>
-          <AuthProvider>
-            <App />
-          </AuthProvider>
+          <ConfirmProvider>
+            <AuthProvider>
+              <App />
+            </AuthProvider>
+          </ConfirmProvider>
         </ToastProvider>
       </BrowserRouter>
     </QueryClientProvider>

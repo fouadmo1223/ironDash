@@ -5,6 +5,7 @@ import { PageHeader, Card, Field, Input } from '@/components/ui/primitives';
 import { Button } from '@/components/ui/button';
 import { Dialog } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
+import { useConfirm } from '@/components/ui/confirm';
 import { useMembers } from '@/lib/api/hooks';
 import { api, apiError, apiErrorIs, unwrap } from '@/lib/api';
 import { cn } from '@/lib/utils';
@@ -251,6 +252,7 @@ function AssignDialog({
 }) {
   const { t } = useTranslation();
   const toast = useToast();
+  const confirm = useConfirm();
   const lng = i18n.language;
   const [search, setSearch] = useState('');
   const [busy, setBusy] = useState(false);
@@ -265,16 +267,16 @@ function AssignDialog({
     } catch (e) {
       if (!replace && apiErrorIs(e, 'hasActiveQr')) {
         setBusy(false);
-        if (
-          window.confirm(
-            t(
-              'qrCards.replaceConfirm',
-              'This member already has a QR. Replace it? The old one is removed.',
-            ),
-          )
-        ) {
-          await assign(memberId, true);
-        }
+        const ok = await confirm({
+          title: t('qrCards.replaceTitle', 'Replace QR'),
+          message: t(
+            'qrCards.replaceConfirm',
+            'This member already has a QR. Replace it? The old one is removed.',
+          ),
+          confirmLabel: t('qrCards.replace', 'Replace'),
+          danger: true,
+        });
+        if (ok) await assign(memberId, true);
         return;
       }
       toast.error(apiError(e));

@@ -10,6 +10,7 @@ import { StatusBadge } from '@/components/ui/status-badge';
 import { DataTable, type Column } from '@/components/ui/data-table';
 import { Dialog } from '@/components/ui/dialog';
 import { useToast } from '@/components/ui/toast';
+import { useConfirm } from '@/components/ui/confirm';
 import {
   useAttendance,
   useBranches,
@@ -512,6 +513,7 @@ function QrDialog({
 }) {
   const { t } = useTranslation();
   const toast = useToast();
+  const confirm = useConfirm();
   type Qr = {
     qrDataUrl: string;
     token: string;
@@ -636,19 +638,22 @@ function QrDialog({
               try {
                 await doAssign(false);
               } catch (e) {
-                if (
-                  apiErrorIs(e, 'hasActiveQr') &&
-                  window.confirm(
-                    t(
+                if (apiErrorIs(e, 'hasActiveQr')) {
+                  const ok = await confirm({
+                    title: t('members.replaceQrTitle', 'Replace QR'),
+                    message: t(
                       'members.replaceQrConfirm',
                       'This member already has a QR. Replace it? The old one is removed.',
                     ),
-                  )
-                ) {
-                  try {
-                    await doAssign(true);
-                  } catch (e2) {
-                    toast.error(apiError(e2));
+                    confirmLabel: t('members.replaceQr', 'Replace'),
+                    danger: true,
+                  });
+                  if (ok) {
+                    try {
+                      await doAssign(true);
+                    } catch (e2) {
+                      toast.error(apiError(e2));
+                    }
                   }
                 } else {
                   toast.error(apiError(e));

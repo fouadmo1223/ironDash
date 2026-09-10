@@ -436,7 +436,9 @@
     "add": "Add member",
     "addTitle": "New member",
     "created": "Member created",
-    "replaceQrConfirm": "This member already has a QR. Replace it? The old one is removed."
+    "replaceQrConfirm": "This member already has a QR. Replace it? The old one is removed.",
+    "replaceQrTitle": "Replace QR",
+    "replaceQr": "Replace"
   },
   "payments": {
     "tab": {
@@ -727,7 +729,9 @@
     "clear": "Clear",
     "printSelected": "Print selected ({{n}})",
     "selectToPrint": "Tick cards to print",
-    "replaceConfirm": "This member already has a QR. Replace it? The old one is removed."
+    "replaceConfirm": "This member already has a QR. Replace it? The old one is removed.",
+    "replaceTitle": "Replace QR",
+    "replace": "Replace"
   },
   "messages": {
     "title": "Messages",
