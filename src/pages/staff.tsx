@@ -121,7 +121,7 @@ function StaffCreateDialog({
   onSaved: () => void;
 }) {
   const { t } = useTranslation();
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -180,7 +180,7 @@ function StaffCreateDialog({
           <Input dir="rtl" {...register('jobTitleAr')} />
         </Field>
         <Field label={t('staff.role')}>
-          <Select {...register('roleId')}>
+          <Select value={watch('roleId')} onChange={(e) => setValue('roleId', e.target.value)}>
             {roles.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name}
@@ -189,7 +189,7 @@ function StaffCreateDialog({
           </Select>
         </Field>
         <Field label={t('staff.branch')}>
-          <Select {...register('branchId')}>
+          <Select value={watch('branchId')} onChange={(e) => setValue('branchId', e.target.value)}>
             {branches.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}
@@ -216,7 +216,7 @@ function StaffEditDialog({
   onSaved: () => void;
 }) {
   const { t } = useTranslation();
-  const { register, handleSubmit } = useForm({
+  const { register, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       roleId: staff.role?._id ?? '',
       branchId: staff.branch?._id ?? '',
@@ -259,7 +259,7 @@ function StaffEditDialog({
     >
       <form className="grid grid-cols-2 gap-3" onSubmit={submit}>
         <Field label={t('staff.role')}>
-          <Select {...register('roleId')}>
+          <Select value={watch('roleId')} onChange={(e) => setValue('roleId', e.target.value)}>
             {roles.map((r) => (
               <option key={r.id} value={r.id}>
                 {r.name}
@@ -268,7 +268,7 @@ function StaffEditDialog({
           </Select>
         </Field>
         <Field label={t('staff.branch')}>
-          <Select {...register('branchId')}>
+          <Select value={watch('branchId')} onChange={(e) => setValue('branchId', e.target.value)}>
             <option value="">—</option>
             {branches.map((b) => (
               <option key={b.id} value={b.id}>
@@ -284,7 +284,7 @@ function StaffEditDialog({
           <Input dir="rtl" {...register('jobTitleAr')} />
         </Field>
         <Field label={t('staff.active')}>
-          <Select {...register('isActive')}>
+          <Select value={watch('isActive')} onChange={(e) => setValue('isActive', e.target.value)}>
             <option value="true">{t('common.yes')}</option>
             <option value="false">{t('common.no')}</option>
           </Select>

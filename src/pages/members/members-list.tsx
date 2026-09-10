@@ -206,7 +206,7 @@ function AddMemberDialog({
   const { t } = useTranslation();
   const toast = useToast();
   const [busy, setBusy] = useState(false);
-  const { register, handleSubmit } = useForm<MemberForm>({
+  const { register, handleSubmit, watch, setValue } = useForm<MemberForm>({
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -275,7 +275,7 @@ function AddMemberDialog({
           <Input dir="ltr" {...register('password', { required: true, minLength: 8 })} />
         </Field>
         <Field label={t('members.branch')}>
-          <Select {...register('primaryBranchId')}>
+          <Select value={watch('primaryBranchId')} onChange={(e) => setValue('primaryBranchId', e.target.value)}>
             {branches.map((b) => (
               <option key={b.id} value={b.id}>
                 {b.name}

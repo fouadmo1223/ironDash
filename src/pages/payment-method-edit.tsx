@@ -95,7 +95,7 @@ function Form({
   onCancel: () => void;
 }) {
   const { t } = useTranslation();
-  const { register, handleSubmit } = useForm({ defaultValues: defaults });
+  const { register, handleSubmit, watch, setValue } = useForm({ defaultValues: defaults });
   const [saving, setSaving] = useState(false);
 
   const submit = async (f: unknown) => {
@@ -129,7 +129,7 @@ function Form({
               <Input dir="rtl" {...register('nameAr', { required: true })} />
             </Field>
             <Field label={t('settings.type')}>
-              <Select {...register('type')}>
+              <Select value={watch('type')} onChange={(e) => setValue('type', e.target.value)}>
                 {TYPES.map((ty) => (
                   <option key={ty} value={ty}>
                     {ty.replaceAll('_', ' ')}
