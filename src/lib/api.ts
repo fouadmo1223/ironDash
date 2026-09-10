@@ -1,4 +1,30 @@
 import axios, { AxiosError, type AxiosInstance } from 'axios';
+import i18n from '@/i18n';
+
+/** Known (English) backend messages → localised keys under `apiErrors`. */
+const API_ERROR_PATTERNS: Array<[RegExp, string]> = [
+  [/already has an active qr/i, 'hasActiveQr'],
+  [/no active subscription|only be assigned to an active member/i, 'noActiveSub'],
+  [/not in the pool|already assigned, or unknown/i, 'cardNotInPool'],
+  [/invalid value for/i, 'invalidValue'],
+  [/account with this email already exists/i, 'emailExists'],
+  [/invalid email or password/i, 'invalidCredentials'],
+  [/account is disabled/i, 'accountDisabled'],
+  [/not found/i, 'notFound'],
+  [/missing permission|staff access required|not available for your account type/i, 'forbidden'],
+  [/too many requests|throttl/i, 'rateLimited'],
+  [/validation failed/i, 'validation'],
+];
+
+function localiseApiMessage(raw: string): string {
+  for (const [re, key] of API_ERROR_PATTERNS) {
+    if (re.test(raw)) {
+      const translated = i18n.t(`apiErrors.${key}`);
+      if (translated && translated !== `apiErrors.${key}`) return translated;
+    }
+  }
+  return raw;
+}
 
 const BASE_URL = (import.meta.env.VITE_API_URL as string) ?? 'http://localhost:4000/api/v1';
 
@@ -94,9 +120,12 @@ export function apiError(error: unknown, fallback = 'Something went wrong'): str
   if (axios.isAxiosError(error)) {
     const data = error.response?.data as { message?: string | string[] } | undefined;
     const msg = data?.message;
-    if (Array.isArray(msg)) return msg.join('\n');
-    if (!error.response) return 'Network error — the server is unreachable.';
-    return msg ?? error.message ?? fallback;
+    if (Array.isArray(msg)) return msg.map(localiseApiMessage).join('\n');
+    if (!error.response) {
+      const net = i18n.t('apiErrors.network');
+      return net && net !== 'apiErrors.network' ? net : 'Network error — the server is unreachable.';
+    }
+    return msg ? localiseApiMessage(msg) : error.message ?? fallback;
   }
   return fallback;
 }

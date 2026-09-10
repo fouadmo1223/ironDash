@@ -287,13 +287,20 @@ function AssignDialog({
             key={m._id}
             disabled={busy}
             onClick={() => assign(m._id)}
-            className="flex w-full items-center justify-between rounded-md border border-border px-3 py-2 text-sm transition-colors hover:border-accent hover:bg-muted/40 disabled:opacity-50"
+            className="flex w-full items-start justify-between gap-3 rounded-md border border-border px-3 py-2 text-start text-sm transition-colors hover:border-accent hover:bg-muted/40 disabled:opacity-50"
           >
-            <span>
-              {m.user?.firstName} {m.user?.lastName}
-              <span className="text-muted-foreground"> · {m.memberCode}</span>
+            <span className="min-w-0">
+              <span className="block truncate">
+                {m.user?.firstName} {m.user?.lastName}
+                <span className="text-muted-foreground"> · {m.memberCode}</span>
+              </span>
+              {m.user?.email && (
+                <span className="block truncate text-xs text-muted-foreground" dir="ltr">
+                  {m.user.email}
+                </span>
+              )}
             </span>
-            <span className="text-xs text-muted-foreground" dir="ltr">
+            <span className="shrink-0 text-xs text-muted-foreground" dir="ltr">
               {m.user?.phone}
             </span>
           </button>

@@ -745,5 +745,19 @@
     "empty": "No messages yet.",
     "archive": "Archive",
     "archived": "Archived"
+  },
+  "apiErrors": {
+    "hasActiveQr": "This member already has an active QR. Release it first.",
+    "noActiveSub": "This member has no active subscription — a QR can only be assigned to an active member.",
+    "cardNotInPool": "That card is not available (already assigned or unknown).",
+    "invalidValue": "Invalid value in the request.",
+    "emailExists": "An account with this email already exists.",
+    "invalidCredentials": "Incorrect email or password.",
+    "accountDisabled": "This account is disabled.",
+    "notFound": "Not found.",
+    "forbidden": "You do not have permission to do that.",
+    "rateLimited": "Too many attempts. Please wait and try again.",
+    "validation": "Please check the highlighted fields.",
+    "network": "Network error — the server is unreachable."
   }
 }
